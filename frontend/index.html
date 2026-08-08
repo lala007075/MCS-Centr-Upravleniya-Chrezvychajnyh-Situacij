@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>МЧС России — Единая система мониторинга</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚒</text></svg>">
+</head>
+<body>
+    <div class="landing-page">
+        <!-- Header -->
+        <header class="landing-header" id="landingHeader">
+            <nav class="landing-nav">
+                <div class="landing-logo">
+                    <div class="logo-emblem">🛡️</div>
+                    <div class="logo-text">
+                        <span class="org-name">МЧС РОССИИ</span>
+                        <span class="org-sub">Министерство по чрезвычайным ситуациям</span>
+                    </div>
+                </div>
+
+                <div class="nav-phone">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                    </svg>
+                    112
+                </div>
+
+                <div class="landing-nav-buttons">
+                    <a href="/login.html" class="btn btn-outline">Вход</a>
+                    <a href="/register.html" class="btn btn-orange">Регистрация</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Hero -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="pulse-dot"></span>
+                    Система оперативного реагирования
+                </div>
+
+                <h1 class="hero-title">
+                    Единая система<br>
+                    <span class="accent">мониторинга вызовов</span>
+                </h1>
+
+                <p class="hero-subtitle">
+                    Автоматизированная информационная система МЧС России для регистрации,
+                    отслеживания и управления чрезвычайными ситуациями в режиме реального времени
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="/login.html" class="btn btn-orange btn-lg">
+                        🔐 Войти в систему
+                    </a>
+                    <a href="/register.html" class="btn btn-outline btn-lg">
+                        📋 Регистрация оператора
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">24/7</div>
+                        <div class="hero-stat-label">Круглосуточно</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">85</div>
+                        <div class="hero-stat-label">Регионов РФ</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">&lt;2мин</div>
+                        <div class="hero-stat-label">Время реакции</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">112</div>
+                        <div class="hero-stat-label">Единый номер</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('landingHeader');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Redirect if already logged in
+        if (localStorage.getItem('mchs_token')) {
+            window.location.href = '/dashboard.html';
+        }
+    </script>
+</body>
+</html>
