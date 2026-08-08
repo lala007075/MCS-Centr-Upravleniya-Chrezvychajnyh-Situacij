@@ -216,6 +216,80 @@ app.delete('/api/incidents/:id', auth, async (req, res) => {
   }
 });
 
+// ===== ТАБЛИЦА ЛИЧНОГО СОСТАВА (добавить в initDB) =====
+// Найдите функцию initDB() и ДОБАВЬТЕ этот CREATE TABLE внутрь неё:
+/*
+    CREATE TABLE IF NOT EXISTS personnel (
+      id SERIAL PRIMARY KEY,
+      personal_file VARCHAR(50) UNIQUE NOT NULL,
+      full_name VARCHAR(255) NOT NULL,
+      position VARCHAR(255) NOT NULL,
+      rank VARCHAR(100) NOT NULL,
+      status VARCHAR(50) NOT NULL DEFAULT 'duty',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+*/
+
+// ===== ПОЛУЧИТЬ СОСТАВ =====
+app.get('/api/personnel', auth, async (req, res) => {
+  try {
+    const { search, status } = req.query;
+    let conditions = [], params = [], i = 1;
+    if (status && status !== 'all') { conditions.push(`status=$${i++}`); params.push(status); }
+    if (search) {
+      conditions.push(`(personal_file ILIKE $${i} OR full_name ILIKE $${i} OR position ILIKE $${i} OR rank ILIKE $${i})`);
+      params.push(`%${search}%`); i++;
+    }
+    const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+    const result = await pool.query(`SELECT * FROM personnel ${where} ORDER BY id DESC`, params);
+    const stats = await pool.query(`
+      SELECT COUNT(*) total,
+        COUNT(*) FILTER (WHERE status='duty') duty,
+        COUNT(*) FILTER (WHERE status='vacation') vacation,
+        COUNT(*) FILTER (WHERE status='sick') sick
+      FROM personnel`);
+    res.json({ personnel: result.rows, stats: stats.rows[0] });
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Ошибка загрузки' }); }
+});
+
+// ===== ДОБАВИТЬ СОТРУДНИКА =====
+app.post('/api/personnel', auth, async (req, res) => {
+  try {
+    const d = req.body;
+    if (!d.personal_file || !d.full_name || !d.position || !d.rank)
+      return res.status(400).json({ error: 'Заполните все поля' });
+    const exists = await pool.query('SELECT id FROM personnel WHERE personal_file=$1', [d.personal_file]);
+    if (exists.rows.length) return res.status(409).json({ error: 'Личное дело с таким № уже существует' });
+    const result = await pool.query(
+      `INSERT INTO personnel (personal_file, full_name, position, rank, status)
+       VALUES ($1,$2,$3,$4,$5) RETURNING *`,
+      [d.personal_file, d.full_name, d.position, d.rank, d.status || 'duty']);
+    res.json({ message: 'Сотрудник добавлен', person: result.rows[0] });
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Ошибка добавления' }); }
+});
+
+// ===== РЕДАКТИРОВАТЬ СОТРУДНИКА =====
+app.put('/api/personnel/:id', auth, async (req, res) => {
+  try {
+    const d = req.body;
+    const result = await pool.query(
+      `UPDATE personnel SET personal_file=$1, full_name=$2, position=$3, rank=$4, status=$5
+       WHERE id=$6 RETURNING *`,
+      [d.personal_file, d.full_name, d.position, d.rank, d.status, req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Сотрудник не найден' });
+    res.json({ message: 'Данные обновлены', person: result.rows[0] });
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Ошибка обновления' }); }
+});
+
+// ===== УДАЛИТЬ СОТРУДНИКА =====
+app.delete('/api/personnel/:id', auth, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM personnel WHERE id=$1 RETURNING id', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Сотрудник не найден' });
+    res.json({ message: 'Сотрудник удалён' });
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Ошибка удаления' }); }
+});
+
 // ===== SPA =====
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) res.sendFile(path.join(__dirname, 'index.html'));
