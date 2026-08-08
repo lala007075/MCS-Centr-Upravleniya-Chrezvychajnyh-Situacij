@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления — МЧС России</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🛡️</div>
+                <div class="sidebar-title">
+                    <span>МЧС РОССИИ</span>
+                    <span>Панель оператора</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Основное</div>
+                    <a href="#" class="sidebar-link active" data-page="incidents">
+                        <span class="link-icon">🚨</span>
+                        Журнал вызовов
+                        <span class="link-badge" id="activeIncidentsBadge">0</span>
+                    </a>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Информация</div>
+                    <a href="#" class="sidebar-link" onclick="showAbout()">
+                        <span class="link-icon">ℹ️</span>
+                        О системе
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar" id="userAvatar">ОП</div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name" id="userName">Оператор</div>
+                    <div class="sidebar-user-role" id="userRole">Оператор</div>
+                </div>
+                <button class="sidebar-logout" onclick="logout()" title="Выход">
+                    🚪
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="top-header-left">
+                    <button class="btn btn-ghost" id="menuToggle" style="display: none; font-size: 20px;">☰</button>
+                    <h1>📋 Журнал вызовов</h1>
+                </div>
+                <div class="top-header-right">
+                    <div class="online-indicator">
+                        <span class="dot"></span>
+                        <span>В сети</span>
+                    </div>
+                    <div class="header-datetime">
+                        <span class="date" id="headerDate"></span>
+                        <span class="time" id="headerTime"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Statistics -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card total fade-in">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon">📊</div>
+                            <span class="stat-card-trend down">Сегодня</span>
+                        </div>
+                        <div class="stat-card-value" id="statTotal">0</div>
+                        <div class="stat-card-label">Всего вызовов</div>
+                    </div>
+                    <div class="stat-card active fade-in" style="animation-delay: 0.1s;">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon">🔥</div>
+                        </div>
+                        <div class="stat-card-value" id="statActive">0</div>
+                        <div class="stat-card-label">Активных</div>
+                    </div>
+                    <div class="stat-card critical fade-in" style="animation-delay: 0.2s;">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon">⚠️</div>
+                        </div>
+                        <div class="stat-card-value" id="statCritical">0</div>
+                        <div class="stat-card-label">Критических</div>
+                    </div>
+                    <div class="stat-card resolved fade-in" style="animation-delay: 0.3s;">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon">✅</div>
+                        </div>
+                        <div class="stat-card-value" id="statResolved">0</div>
+                        <div class="stat-card-label">Завершённых</div>
+                    </div>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="searchInput" placeholder="Поиск по номеру, адресу, описанию...">
+                        </div>
+                        <select class="filter-select" id="filterStatus">
+                            <option value="all">Все статусы</option>
+                            <option value="new">🔵 Новый</option>
+                            <option value="dispatched">🟡 Отправлен</option>
+                            <option value="in_progress">🟠 В работе</option>
+                            <option value="resolved">🟢 Завершён</option>
+                            <option value="closed">⚫ Закрыт</option>
+                            <option value="cancelled">❌ Отменён</option>
+                        </select>
+                        <select class="filter-select" id="filterPriority">
+                            <option value="all">Все приоритеты</option>
+                            <option value="critical">🔴 Критический</option>
+                            <option value="high">🟠 Высокий</option>
+                            <option value="medium">🟡 Средний</option>
+                            <option value="low">🔵 Низкий</option>
+                        </select>
+                        <select class="filter-select" id="filterType">
+                            <option value="all">Все типы</option>
+                            <option value="fire">🔥 Пожар</option>
+                            <option value="rescue">🚑 Спасение</option>
+                            <option value="flood">🌊 Наводнение</option>
+                            <option value="gas">💨 Утечка газа</option>
+                            <option value="collapse">🏚️ Обрушение</option>
+                            <option value="accident">🚗 ДТП</option>
+                            <option value="other">📋 Другое</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-right">
+                        <button class="btn btn-outline btn-sm" onclick="loadIncidents()">
+                            🔄 Обновить
+                        </button>
+                        <button class="btn btn-orange" onclick="openCreateModal()">
+                            ➕ Новый вызов
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Incidents Table -->
+                <div class="incidents-card">
+                    <div class="table-container">
+                        <table class="incidents-table">
+                            <thead>
+                                <tr>
+                                    <th>Номер</th>
+                                    <th>Тип / Категория</th>
+                                    <th>Приоритет</th>
+                                    <th>Статус</th>
+                                    <th>Адрес</th>
+                                    <th>Заявитель</th>
+                                    <th>Дата/Время</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incidentsTableBody">
+                                <tr>
+                                    <td colspan="8">
+                                        <div class="loading-spinner">
+                                            <div class="spinner"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-footer">
+                        <div class="table-info" id="tableInfo">Загрузка...</div>
+                        <div class="pagination" id="pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- CREATE/EDIT MODAL -->
+    <div class="modal-overlay" id="incidentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">🚨 Новый вызов</h3>
+                <button class="modal-close" onclick="closeModal('incidentModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="incidentForm">
+                    <input type="hidden" id="incidentId">
+
+                    <!-- Основная информация -->
+                    <div class="form-section">
+                        <div class="form-section-title">📋 Основная информация</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Тип происшествия <span class="required">*</span></label>
+                                <select class="form-input" id="incidentType" required>
+                                    <option value="">Выберите тип</option>
+                                    <option value="fire">🔥 Пожар</option>
+                                    <option value="rescue">🚑 Спасательная операция</option>
+                                    <option value="flood">🌊 Наводнение/Подтопление</option>
+                                    <option value="gas">💨 Утечка газа</option>
+                                    <option value="collapse">🏚️ Обрушение здания</option>
+                                    <option value="accident">🚗 ДТП</option>
+                                    <option value="other">📋 Другое</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Категория <span class="required">*</span></label>
+                                <select class="form-input" id="incidentCategory" required>
+                                    <option value="">Выберите категорию</option>
+                                    <option value="Бытовой пожар">Бытовой пожар</option>
+                                    <option value="Промышленный пожар">Промышленный пожар</option>
+                                    <option value="Лесной пожар">Лесной пожар</option>
+                                    <option value="Транспортный пожар">Транспортный пожар</option>
+                                    <option value="Спасение людей">Спасение людей</option>
+                                    <option value="Разбор завалов">Разбор завалов</option>
+                                    <option value="Поиск пропавших">Поиск пропавших</option>
+                                    <option value="Эвакуация">Эвакуация</option>
+                                    <option value="Ликвидация ЧС">Ликвидация ЧС</option>
+                                    <option value="Техническая помощь">Техническая помощь</option>
+                                    <option value="Другое">Другое</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Приоритет <span class="required">*</span></label>
+                                <select class="form-input" id="incidentPriority" required>
+                                    <option value="low">🔵 Низкий</option>
+                                    <option value="medium" selected>🟡 Средний</option>
+                                    <option value="high">🟠 Высокий</option>
+                                    <option value="critical">🔴 Критический</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="statusGroup" style="display: none;">
+                                <label>Статус</label>
+                                <select class="form-input" id="incidentStatus">
+                                    <option value="new">🔵 Новый</option>
+                                    <option value="dispatched">🟡 Бригада направлена</option>
+                                    <option value="in_progress">🟠 В работе</option>
+                                    <option value="resolved">🟢 Завершён</option>
+                                    <option value="closed">⚫ Закрыт</option>
+                                    <option value="cancelled">❌ Отменён</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Описание ситуации <span class="required">*</span></label>
+                            <textarea class="form-input" id="incidentDescription" rows="3"
+                                      placeholder="Подробное описание происшествия..." required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Местоположение -->
+                    <div class="form-section">
+                        <div class="form-section-title">📍 Местоположение</div>
+                        <div class="form-group">
+                            <label>Адрес <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="incidentAddress"
+                                   placeholder="ул. Ленина, д. 15, кв. 42" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Город <span class="required">*</span></label>
+                                <input type="text" class="form-input" id="incidentCity"
+                                       placeholder="Москва" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Регион</label>
+                                <input type="text" class="form-input" id="incidentRegion"
+                                       placeholder="Московская область">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Заявитель -->
+                    <div class="form-section">
+                        <div class="form-section-title">👤 Информация о заявителе</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>ФИО заявителя</label>
+                                <input type="text" class="form-input" id="callerName"
+                                       placeholder="Петров Пётр Петрович">
+                            </div>
+                            <div class="form-group">
+                                <label>Телефон заявителя</label>
+                                <input type="tel" class="form-input" id="callerPhone"
+                                       placeholder="+7 (999) 123-45-67">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ресурсы -->
+                    <div class="form-section">
+                        <div class="form-section-title">🚒 Назначенные ресурсы</div>
+                        <div class="form-group">
+                            <label>Назначенное подразделение</label>
+                            <select class="form-input" id="assignedUnit">
+                                <option value="">Не назначено</option>
+                                <option value="ПЧ-1 Центральная">ПЧ-1 Центральная</option>
+                                <option value="ПЧ-2 Северная">ПЧ-2 Северная</option>
+                                <option value="ПЧ-3 Южная">ПЧ-3 Южная</option>
+                                <option value="ПЧ-4 Западная">ПЧ-4 Западная</option>
+                                <option value="ПЧ-5 Восточная">ПЧ-5 Восточная</option>
+                                <option value="СО-1 Спасательный отряд">СО-1 Спасательный отряд</option>
+                                <option value="СО-2 Спасательный отряд">СО-2 Спасательный отряд</option>
+                                <option value="АСГ Аварийно-спасательная группа">АСГ Аварийно-спасательная группа</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Личный состав (чел.)</label>
+                                <input type="number" class="form-input" id="personnelCount"
+                                       placeholder="0" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Техника (ед.)</label>
+                                <input type="number" class="form-input" id="vehiclesCount"
+                                       placeholder="0" min="0" value="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Примечания</label>
+                            <textarea class="form-input" id="incidentNotes" rows="2"
+                                      placeholder="Дополнительные заметки..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('incidentModal')">Отмена</button>
+                <button class="btn btn-orange" id="saveIncidentBtn" onclick="saveIncident()">
+                    💾 Сохранить вызов
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW MODAL -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="viewModalTitle">📋 Просмотр вызова</h3>
+                <button class="modal-close" onclick="closeModal('viewModal')">✕</button>
+            </div>
+            <div class="modal-body" id="viewModalBody">
+                <!-- Content injected by JS -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('viewModal')">Закрыть</button>
+                <button class="btn btn-primary" id="viewEditBtn">✏️ Редактировать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE CONFIRM -->
+    <div class="modal-overlay confirm-dialog" id="deleteModal">
+        <div class="modal">
+            <div class="modal-body" style="padding: 40px 28px;">
+                <div class="confirm-icon">🗑️</div>
+                <div class="confirm-text">
+                    <h3>Удалить вызов?</h3>
+                    <p id="deleteConfirmText">Это действие необратимо. Вызов будет удалён из системы.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('deleteModal')">Отмена</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">🗑️ Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
