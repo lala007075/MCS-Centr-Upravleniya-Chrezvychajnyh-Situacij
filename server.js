@@ -58,6 +58,16 @@ async function initDB() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS personnel (
+      id SERIAL PRIMARY KEY,
+      personal_file VARCHAR(50) UNIQUE NOT NULL,
+      full_name VARCHAR(255) NOT NULL,
+      position VARCHAR(255) NOT NULL,
+      rank VARCHAR(100) NOT NULL,
+      status VARCHAR(50) NOT NULL DEFAULT 'duty',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
   `);
   console.log('✅ Таблицы готовы');
 }
@@ -123,7 +133,11 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// ===== ПОЛУЧИТЬ ВЫЗОВЫ =====
+// ============================================================
+// ===== ВЫЗОВЫ =====
+// ============================================================
+
+// ПОЛУЧИТЬ ВЫЗОВЫ
 app.get('/api/incidents', auth, async (req, res) => {
   try {
     const { search, status, priority } = req.query;
@@ -158,7 +172,7 @@ app.get('/api/incidents', auth, async (req, res) => {
   }
 });
 
-// ===== СОЗДАТЬ ВЫЗОВ =====
+// СОЗДАТЬ ВЫЗОВ
 app.post('/api/incidents', auth, async (req, res) => {
   try {
     const d = req.body;
@@ -183,7 +197,7 @@ app.post('/api/incidents', auth, async (req, res) => {
   }
 });
 
-// ===== РЕДАКТИРОВАТЬ ВЫЗОВ =====
+// РЕДАКТИРОВАТЬ ВЫЗОВ
 app.put('/api/incidents/:id', auth, async (req, res) => {
   try {
     const d = req.body;
@@ -204,7 +218,7 @@ app.put('/api/incidents/:id', auth, async (req, res) => {
   }
 });
 
-// ===== УДАЛИТЬ ВЫЗОВ =====
+// УДАЛИТЬ ВЫЗОВ
 app.delete('/api/incidents/:id', auth, async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM incidents WHERE id=$1 RETURNING id', [req.params.id]);
@@ -216,21 +230,11 @@ app.delete('/api/incidents/:id', auth, async (req, res) => {
   }
 });
 
-// ===== ТАБЛИЦА ЛИЧНОГО СОСТАВА (добавить в initDB) =====
-// Найдите функцию initDB() и ДОБАВЬТЕ этот CREATE TABLE внутрь неё:
-/*
-    CREATE TABLE IF NOT EXISTS personnel (
-      id SERIAL PRIMARY KEY,
-      personal_file VARCHAR(50) UNIQUE NOT NULL,
-      full_name VARCHAR(255) NOT NULL,
-      position VARCHAR(255) NOT NULL,
-      rank VARCHAR(100) NOT NULL,
-      status VARCHAR(50) NOT NULL DEFAULT 'duty',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-*/
+// ============================================================
+// ===== СОСТАВ ЦУЧС (PERSONNEL) =====
+// ============================================================
 
-// ===== ПОЛУЧИТЬ СОСТАВ =====
+// ПОЛУЧИТЬ СОСТАВ
 app.get('/api/personnel', auth, async (req, res) => {
   try {
     const { search, status } = req.query;
@@ -252,7 +256,7 @@ app.get('/api/personnel', auth, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Ошибка загрузки' }); }
 });
 
-// ===== ДОБАВИТЬ СОТРУДНИКА =====
+// ДОБАВИТЬ СОТРУДНИКА
 app.post('/api/personnel', auth, async (req, res) => {
   try {
     const d = req.body;
@@ -268,7 +272,7 @@ app.post('/api/personnel', auth, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Ошибка добавления' }); }
 });
 
-// ===== РЕДАКТИРОВАТЬ СОТРУДНИКА =====
+// РЕДАКТИРОВАТЬ СОТРУДНИКА
 app.put('/api/personnel/:id', auth, async (req, res) => {
   try {
     const d = req.body;
@@ -281,7 +285,7 @@ app.put('/api/personnel/:id', auth, async (req, res) => {
   } catch (e) { console.error(e); res.status(500).json({ error: 'Ошибка обновления' }); }
 });
 
-// ===== УДАЛИТЬ СОТРУДНИКА =====
+// УДАЛИТЬ СОТРУДНИКА
 app.delete('/api/personnel/:id', auth, async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM personnel WHERE id=$1 RETURNING id', [req.params.id]);
