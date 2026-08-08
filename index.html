@@ -264,13 +264,16 @@ tr.p-medium{border-left:3px solid var(--yellow)}tr.p-low{border-left:3px solid v
 <div class="fg"><label>📧 Email <span class="req">*</span></label><input type="email" class="fi" id="rg-email" placeholder="ivanov@mchs.gov.ru" required></div>
 <div class="frow">
 <div class="fg"><label>🎖️ Звание</label><select class="fi" id="rg-rank">
-<option>Оператор</option><option>Прапорщик вн. службы</option><option>Лейтенант вн. службы</option>
-<option>Старший лейтенант вн. службы</option><option>Капитан вн. службы</option>
-<option>Майор вн. службы</option><option>Подполковник вн. службы</option><option>Полковник вн. службы</option>
+<option>Старший сержант</option><option>Старшина</option><option>Прапорщик</option>
+<option>Старший прапорщик</option><option>Младший лейтенант</option><option>Лейтенант</option>
+<option>Старший лейтенант</option><option>Капитан</option><option>Майор</option><option>Подполковник</option>
 </select></div>
 <div class="fg"><label>💼 Должность</label><select class="fi" id="rg-pos">
-<option>Оперативный дежурный</option><option>Старший оперативный дежурный</option>
-<option>Диспетчер</option><option>Старший диспетчер</option><option>Помощник ОД</option><option>Начальник смены</option>
+<option>Стажёр-диспетчер</option><option>Диспетчер</option><option>Старший диспетчер</option>
+<option>Дежурный по направлению</option><option>Оперативный дежурный</option>
+<option>Старший оперативный дежурный</option><option>Ведущий оперативный дежурный</option>
+<option>Инструктор по подготовке диспетчеров</option>
+<option>Заместитель начальника подразделения ЦУЧС</option><option>Начальник подразделения ЦУЧС</option>
 </select></div>
 </div>
 <div class="fg"><label>🔒 Пароль <span class="req">*</span></label><input type="password" class="fi" id="rg-pass" placeholder="Минимум 6 символов" required minlength="6"></div>
@@ -335,7 +338,7 @@ tr.p-medium{border-left:3px solid var(--yellow)}tr.p-low{border-left:3px solid v
 <div class="tools">
 <div class="tools-l">
 <div class="search"><span class="si">🔍</span><input id="pf-search" placeholder="Поиск по ФИО, № дела, званию..."></div>
-<select class="fsel" id="pf-status"><option value="all">Все статусы</option><option value="duty">🟢 На дежурстве</option><option value="off">⚪ Выходной</option><option value="vacation">🏖️ Отпуск</option><option value="sick">🏥 Больничный</option><option value="mission">🚒 На выезде</option></select>
+<select class="fsel" id="pf-status"><option value="all">Все статусы</option><option value="duty">🟢 На дежурстве</option><option value="off">⚪ Выходной</option><option value="vacation">🏖️ Отпуск</option><option value="sick">🏥 Больничный</option><option value="mission">🚒 На выезде</option><option value="offduty">🔴 Вне дежурства</option><option value="break">☕ На перерыве</option></select>
 </div>
 <div class="tools-r"><button class="btn btn-outline btn-sm" onclick="loadPersonnel()">🔄 Обновить</button><button class="btn btn-orange" onclick="openCreateP()">➕ Добавить сотрудника</button></div>
 </div>
@@ -398,9 +401,31 @@ tr.p-medium{border-left:3px solid var(--yellow)}tr.p-low{border-left:3px solid v
 <input type="hidden" id="p-id">
 <div class="fg"><label>Личное дело № <span class="req">*</span></label><input class="fi" id="p-file" placeholder="12345"></div>
 <div class="fg"><label>Фамилия Имя Отчество <span class="req">*</span></label><input class="fi" id="p-name" placeholder="Иванов Иван Иванович"></div>
-<div class="fg"><label>Должность <span class="req">*</span></label><select class="fi" id="p-pos"><option value="">Выберите должность</option><option>Начальник ЦУЧС</option><option>Заместитель начальника</option><option>Начальник смены</option><option>Старший оперативный дежурный</option><option>Оперативный дежурный</option><option>Старший диспетчер</option><option>Диспетчер</option><option>Помощник ОД</option><option>Оператор</option></select></div>
-<div class="fg"><label>Звание <span class="req">*</span></label><select class="fi" id="p-rank"><option value="">Выберите звание</option><option>Рядовой вн. службы</option><option>Прапорщик вн. службы</option><option>Лейтенант вн. службы</option><option>Старший лейтенант вн. службы</option><option>Капитан вн. службы</option><option>Майор вн. службы</option><option>Подполковник вн. службы</option><option>Полковник вн. службы</option></select></div>
-<div class="fg"><label>Статус <span class="req">*</span></label><select class="fi" id="p-status"><option value="duty">🟢 На дежурстве</option><option value="off">⚪ Выходной</option><option value="vacation">🏖️ Отпуск</option><option value="sick">🏥 Больничный</option><option value="mission">🚒 На выезде</option></select></div>
+<div class="fg"><label>Должность <span class="req">*</span></label>
+<select class="fi" id="p-pos" onchange="togglePosCustom()">
+<option value="">Выберите должность</option>
+<option>Стажёр-диспетчер</option><option>Диспетчер</option><option>Старший диспетчер</option>
+<option>Дежурный по направлению</option><option>Оперативный дежурный</option>
+<option>Старший оперативный дежурный</option><option>Ведущий оперативный дежурный</option>
+<option>Инструктор по подготовке диспетчеров</option>
+<option>Заместитель начальника подразделения ЦУЧС</option><option>Начальник подразделения ЦУЧС</option>
+</select></div>
+<div class="fg" id="p-pos-custom-g" style="display:none"><label>Направление (ручной ввод) <span class="req">*</span></label><input class="fi" id="p-pos-custom" maxlength="50" placeholder="напр. вызовов лесных возгораний"><div style="font-size:12px;color:var(--muted);margin-top:4px">Итог: «Дежурный по направлению <span id="p-pos-preview" style="color:var(--orange)">...</span>» · макс. 50 символов</div></div>
+<div class="fg"><label>Звание <span class="req">*</span></label>
+<select class="fi" id="p-rank" onchange="toggleRankCustom()">
+<option value="">Выберите звание</option>
+<option>Старший сержант</option><option>Старшина</option><option>Прапорщик</option>
+<option>Старший прапорщик</option><option>Младший лейтенант</option><option>Лейтенант</option>
+<option>Старший лейтенант</option><option>Капитан</option><option>Майор</option><option>Подполковник</option>
+</select></div>
+<div class="fg" id="p-rank-custom-g" style="display:none"><label>Уточнение звания (ручной ввод)</label><input class="fi" id="p-rank-custom" maxlength="50" placeholder="уточнение (необязательно)"><div style="font-size:12px;color:var(--muted);margin-top:4px">Итог: «Старший прапорщик <span id="p-rank-preview" style="color:var(--orange)">...</span>» · макс. 50 символов</div></div>
+<div class="fg"><label>Статус <span class="req">*</span></label>
+<select class="fi" id="p-status">
+<option value="duty">🟢 На дежурстве</option><option value="off">⚪ Выходной</option>
+<option value="vacation">🏖️ Отпуск</option><option value="sick">🏥 Больничный</option>
+<option value="mission">🚒 На выезде</option><option value="offduty">🔴 Вне дежурства</option>
+<option value="break">☕ На перерыве</option>
+</select></div>
 </div>
 <div class="m-f"><button class="btn btn-outline" onclick="closeM('mp-form')">Отмена</button><button class="btn btn-orange" id="savep-btn" onclick="savePerson()">💾 Сохранить</button></div>
 </div></div>
@@ -444,7 +469,6 @@ function fdate(s){return s?new Date(s).toLocaleDateString('ru-RU'):'—'}
 function ftime(s){return s?new Date(s).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}
 function ago(s){if(!s)return'';const d=Math.floor((new Date()-new Date(s))/1000);if(d<60)return'только что';if(d<3600)return Math.floor(d/60)+' мин назад';if(d<86400)return Math.floor(d/3600)+' ч назад';return fdate(s)}
 
-// ВЫЗОВЫ
 async function loadIncidents(){try{const q=new URLSearchParams();const s=document.getElementById('f-search').value,st=document.getElementById('f-status').value,pr=document.getElementById('f-priority').value;if(s)q.set('search',s);if(st!=='all')q.set('status',st);if(pr!=='all')q.set('priority',pr);const d=await api('/incidents?'+q);if(!d)return;incidents=d.incidents;render(d.incidents);stats(d.stats)}catch(e){document.getElementById('tbody').innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empty-ic">⚠️</div><h3>Ошибка</h3><p>${e.message}</p></div></td></tr>`}}
 function stats(s){document.getElementById('st-total').textContent=s.total||0;document.getElementById('st-active').textContent=s.active||0;document.getElementById('st-crit').textContent=s.critical||0;document.getElementById('st-res').textContent=s.resolved||0;document.getElementById('side-bdg').textContent=s.active||0}
 function render(list){const tb=document.getElementById('tbody');if(!list.length){tb.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empty-ic">📋</div><h3>Нет вызовов</h3><p>Создайте новый вызов</p><button class="btn btn-orange" onclick="openCreate()">➕ Новый вызов</button></div></td></tr>`;return}tb.innerHTML=list.map(i=>`<tr class="p-${i.priority}" style="animation:fadeIn .3s"><td><span class="num-c">${i.incident_number}</span></td><td><div class="type-c"><div class="type-ic">${TYPEIC[i.incident_type]||'📋'}</div><span class="type-n">${(TYPE[i.incident_type]||i.incident_type).replace(/^\S+\s/,'')}</span></div></td><td><span class="bdg p-${i.priority}-b">${PR[i.priority]}</span></td><td><span class="bdg s-${i.status}">${ST[i.status]}</span></td><td><div style="font-weight:600">${i.district}</div><div style="font-size:12px;color:var(--muted)">${i.address}</div></td><td><div>${i.caller_name||'—'}</div><div style="font-size:12px;color:var(--muted)">${i.caller_phone||''}</div></td><td><div>${fdate(i.created_at)}</div><div style="font-size:12px;color:var(--muted)">${ago(i.created_at)}</div></td><td><div class="tact"><button class="ibtn" onclick="viewIncident(${i.id})" title="Просмотр">👁️</button><button class="ibtn e" onclick="editIncident(${i.id})" title="Редакт">✏️</button><button class="ibtn d" onclick="delIncident(${i.id},'${i.incident_number}')" title="Удалить">🗑️</button></div></td></tr>`).join('')}
@@ -462,26 +486,29 @@ function viewIncident(id){const i=incidents.find(x=>x.id===id);if(!i)return;docu
 
 function delIncident(id,num){document.getElementById('del-txt').textContent=`Вызов ${num} будет удалён безвозвратно. Продолжить?`;document.getElementById('del-btn').onclick=async()=>{const b=document.getElementById('del-btn');b.disabled=true;b.innerHTML='<div class="spin" style="width:20px;height:20px;border-width:2px"></div>';try{await api('/incidents/'+id,{method:'DELETE'});toast('success','Удалено','Вызов удалён');closeM('m-del');loadIncidents()}catch(e){toast('error','Ошибка',e.message)}finally{b.disabled=false;b.innerHTML='🗑️ Удалить'}};openM('m-del')}
 
-// ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
 function switchTab(tab){document.getElementById('tab-incidents').classList.toggle('hidden',tab!=='incidents');document.getElementById('tab-personnel').classList.toggle('hidden',tab!=='personnel');document.getElementById('nav-incidents').classList.toggle('active',tab==='incidents');document.getElementById('nav-personnel').classList.toggle('active',tab==='personnel');document.getElementById('page-title').textContent=tab==='incidents'?'📋 Журнал вызовов':'👥 Состав ЦУЧС';if(tab==='personnel')loadPersonnel()}
 
-// СОСТАВ ЦУЧС
-const PSTAT={duty:'🟢 На дежурстве',off:'⚪ Выходной',vacation:'🏖️ Отпуск',sick:'🏥 Больничный',mission:'🚒 На выезде'};
-const PSTATCLS={duty:'s-resolved',off:'s-closed',vacation:'s-dispatched',sick:'p-high-b',mission:'s-in_progress'};
+const PSTAT={duty:'🟢 На дежурстве',off:'⚪ Выходной',vacation:'🏖️ Отпуск',sick:'🏥 Больничный',mission:'🚒 На выезде',offduty:'🔴 Вне дежурства',break:'☕ На перерыве'};
+const PSTATCLS={duty:'s-resolved',off:'s-closed',vacation:'s-dispatched',sick:'p-high-b',mission:'s-in_progress',offduty:'p-critical-b',break:'s-new'};
 
 async function loadPersonnel(){try{const q=new URLSearchParams();const s=document.getElementById('pf-search').value,st=document.getElementById('pf-status').value;if(s)q.set('search',s);if(st!=='all')q.set('status',st);const d=await api('/personnel?'+q);if(!d)return;personnel=d.personnel;renderP(d.personnel);document.getElementById('pst-total').textContent=d.stats.total||0;document.getElementById('pst-duty').textContent=d.stats.duty||0;document.getElementById('pst-vac').textContent=d.stats.vacation||0;document.getElementById('pst-sick').textContent=d.stats.sick||0;document.getElementById('side-bdg-p').textContent=d.stats.duty||0}catch(e){document.getElementById('ptbody').innerHTML=`<tr><td colspan="6"><div class="empty"><div class="empty-ic">⚠️</div><h3>Ошибка</h3><p>${e.message}</p></div></td></tr>`}}
 
 function renderP(list){const tb=document.getElementById('ptbody');if(!list.length){tb.innerHTML=`<tr><td colspan="6"><div class="empty"><div class="empty-ic">👥</div><h3>Нет сотрудников</h3><p>Добавьте личный состав ЦУЧС</p><button class="btn btn-orange" onclick="openCreateP()">➕ Добавить сотрудника</button></div></td></tr>`;return}tb.innerHTML=list.map(p=>`<tr style="animation:fadeIn .3s"><td><span class="num-c">${p.personal_file}</span></td><td><div style="font-weight:600">${p.full_name}</div></td><td>${p.position}</td><td>${p.rank}</td><td><span class="bdg ${PSTATCLS[p.status]||'s-closed'}">${PSTAT[p.status]||p.status}</span></td><td><div class="tact"><button class="ibtn e" onclick="editPerson(${p.id})" title="Редакт">✏️</button><button class="ibtn d" onclick="delPerson(${p.id},'${p.full_name}')" title="Удалить">🗑️</button></div></td></tr>`).join('')}
 
-function openCreateP(){document.getElementById('mp-title').textContent='👤 Новый сотрудник';document.getElementById('p-id').value='';document.getElementById('p-file').value='';document.getElementById('p-name').value='';document.getElementById('p-pos').value='';document.getElementById('p-rank').value='';document.getElementById('p-status').value='duty';document.getElementById('savep-btn').innerHTML='💾 Добавить';openM('mp-form')}
+function togglePosCustom(){const v=document.getElementById('p-pos').value;const g=document.getElementById('p-pos-custom-g');if(v==='Дежурный по направлению'){g.style.display='block';document.getElementById('p-pos-custom').oninput=updatePosPreview;updatePosPreview()}else{g.style.display='none';document.getElementById('p-pos-custom').value=''}}
+function updatePosPreview(){document.getElementById('p-pos-preview').textContent=document.getElementById('p-pos-custom').value||'...'}
+function toggleRankCustom(){const v=document.getElementById('p-rank').value;const g=document.getElementById('p-rank-custom-g');if(v==='Старший прапорщик'){g.style.display='block';document.getElementById('p-rank-custom').oninput=updateRankPreview;updateRankPreview()}else{g.style.display='none';document.getElementById('p-rank-custom').value=''}}
+function updateRankPreview(){document.getElementById('p-rank-preview').textContent=document.getElementById('p-rank-custom').value||'...'}
 
-function editPerson(id){const p=personnel.find(x=>x.id===id);if(!p)return;document.getElementById('mp-title').textContent='✏️ Редактирование';document.getElementById('p-id').value=p.id;document.getElementById('p-file').value=p.personal_file;document.getElementById('p-name').value=p.full_name;document.getElementById('p-pos').value=p.position;document.getElementById('p-rank').value=p.rank;document.getElementById('p-status').value=p.status;document.getElementById('savep-btn').innerHTML='💾 Сохранить изменения';openM('mp-form')}
+function openCreateP(){document.getElementById('mp-title').textContent='👤 Новый сотрудник';document.getElementById('p-id').value='';document.getElementById('p-file').value='';document.getElementById('p-name').value='';document.getElementById('p-pos').value='';document.getElementById('p-rank').value='';document.getElementById('p-status').value='duty';document.getElementById('p-pos-custom').value='';document.getElementById('p-rank-custom').value='';document.getElementById('p-pos-custom-g').style.display='none';document.getElementById('p-rank-custom-g').style.display='none';document.getElementById('savep-btn').innerHTML='💾 Добавить';openM('mp-form')}
 
-async function savePerson(){const id=document.getElementById('p-id').value,edit=!!id;const data={personal_file:document.getElementById('p-file').value,full_name:document.getElementById('p-name').value,position:document.getElementById('p-pos').value,rank:document.getElementById('p-rank').value,status:document.getElementById('p-status').value};if(!data.personal_file||!data.full_name||!data.position||!data.rank){toast('warning','Внимание','Заполните все поля');return}const b=document.getElementById('savep-btn');b.disabled=true;const o=b.innerHTML;b.innerHTML='<div class="spin" style="width:20px;height:20px;border-width:2px"></div>';try{await api(edit?'/personnel/'+id:'/personnel',{method:edit?'PUT':'POST',body:JSON.stringify(data)});toast('success',edit?'Обновлено':'Добавлено',edit?'Данные сохранены':'Сотрудник добавлен');closeM('mp-form');loadPersonnel()}catch(e){toast('error','Ошибка',e.message)}finally{b.disabled=false;b.innerHTML=o}}
+function editPerson(id){const p=personnel.find(x=>x.id===id);if(!p)return;document.getElementById('mp-title').textContent='✏️ Редактирование';document.getElementById('p-id').value=p.id;document.getElementById('p-file').value=p.personal_file;document.getElementById('p-name').value=p.full_name;document.getElementById('p-status').value=p.status;if(p.position.startsWith('Дежурный по направлению ')){document.getElementById('p-pos').value='Дежурный по направлению';document.getElementById('p-pos-custom').value=p.position.replace('Дежурный по направлению ','')}else{document.getElementById('p-pos').value=p.position;document.getElementById('p-pos-custom').value=''}togglePosCustom();if(p.rank.startsWith('Старший прапорщик ')){document.getElementById('p-rank').value='Старший прапорщик';document.getElementById('p-rank-custom').value=p.rank.replace('Старший прапорщик ','')}else{document.getElementById('p-rank').value=p.rank;document.getElementById('p-rank-custom').value=''}toggleRankCustom();document.getElementById('savep-btn').innerHTML='💾 Сохранить изменения';openM('mp-form')}
+
+async function savePerson(){const id=document.getElementById('p-id').value,edit=!!id;let position=document.getElementById('p-pos').value;let rank=document.getElementById('p-rank').value;if(position==='Дежурный по направлению'){const c=document.getElementById('p-pos-custom').value.trim();if(!c){toast('warning','Внимание','Введите направление (ручной ввод)');return}position='Дежурный по направлению '+c}if(rank==='Старший прапорщик'){const c=document.getElementById('p-rank-custom').value.trim();if(c)rank='Старший прапорщик '+c}const data={personal_file:document.getElementById('p-file').value,full_name:document.getElementById('p-name').value,position:position,rank:rank,status:document.getElementById('p-status').value};if(!data.personal_file||!data.full_name||!document.getElementById('p-pos').value||!document.getElementById('p-rank').value){toast('warning','Внимание','Заполните все поля');return}const b=document.getElementById('savep-btn');b.disabled=true;const o=b.innerHTML;b.innerHTML='<div class="spin" style="width:20px;height:20px;border-width:2px"></div>';try{await api(edit?'/personnel/'+id:'/personnel',{method:edit?'PUT':'POST',body:JSON.stringify(data)});toast('success',edit?'Обновлено':'Добавлено',edit?'Данные сохранены':'Сотрудник добавлен');closeM('mp-form');loadPersonnel()}catch(e){toast('error','Ошибка',e.message)}finally{b.disabled=false;b.innerHTML=o}}
 
 function delPerson(id,name){document.getElementById('delp-txt').textContent=`Сотрудник ${name} будет удалён. Продолжить?`;document.getElementById('delp-btn').onclick=async()=>{const b=document.getElementById('delp-btn');b.disabled=true;b.innerHTML='<div class="spin" style="width:20px;height:20px;border-width:2px"></div>';try{await api('/personnel/'+id,{method:'DELETE'});toast('success','Удалено','Сотрудник удалён');closeM('mp-del');loadPersonnel()}catch(e){toast('error','Ошибка',e.message)}finally{b.disabled=false;b.innerHTML='🗑️ Удалить'}};openM('mp-del')}
 
-function showAbout(){document.getElementById('v-title').textContent='ℹ️ О системе';document.getElementById('v-body').innerHTML=`<div style="text-align:center;padding:20px"><div style="font-size:60px;margin-bottom:14px">🛡️</div><h2 style="font-size:22px;font-weight:800;margin-bottom:6px">ЦУЧС ГУ МЧС по ЦАО</h2><p style="color:var(--orange);font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px">Центр управления в чрезвычайных ситуациях</p><div class="dgrid" style="text-align:left"><div class="di"><div class="di-l">Округ</div><div class="di-v">ЦАО г. Москвы</div></div><div class="di"><div class="di-l">Версия</div><div class="di-v">1.1.0</div></div><div class="di"><div class="di-l">Пожарная охрана</div><div class="di-v" style="color:var(--orange);font-weight:800;font-size:20px">101</div></div><div class="di"><div class="di-l">Единый номер</div><div class="di-v" style="color:var(--orange);font-weight:800;font-size:20px">112</div></div></div></div>`;document.getElementById('v-edit').style.display='none';openM('m-view')}
+function showAbout(){document.getElementById('v-title').textContent='ℹ️ О системе';document.getElementById('v-body').innerHTML=`<div style="text-align:center;padding:20px"><div style="font-size:60px;margin-bottom:14px">🛡️</div><h2 style="font-size:22px;font-weight:800;margin-bottom:6px">ЦУЧС ГУ МЧС по ЦАО</h2><p style="color:var(--orange);font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px">Центр управления в чрезвычайных ситуациях</p><div class="dgrid" style="text-align:left"><div class="di"><div class="di-l">Округ</div><div class="di-v">ЦАО г. Москвы</div></div><div class="di"><div class="di-l">Версия</div><div class="di-v">1.2.0</div></div><div class="di"><div class="di-l">Пожарная охрана</div><div class="di-v" style="color:var(--orange);font-weight:800;font-size:20px">101</div></div><div class="di"><div class="di-l">Единый номер</div><div class="di-v" style="color:var(--orange);font-weight:800;font-size:20px">112</div></div></div></div>`;document.getElementById('v-edit').style.display='none';openM('m-view')}
 
 document.querySelectorAll('.ov').forEach(o=>o.onclick=e=>{if(e.target===o)o.classList.remove('active')});
 document.onkeydown=e=>{if(e.key==='Escape')document.querySelectorAll('.ov.active').forEach(m=>m.classList.remove('active'))};
